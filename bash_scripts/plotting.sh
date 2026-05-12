@@ -3,8 +3,6 @@
 # Script to generate evaluation plots for different configurations
 echo "=== GENERATING EVALUATION PLOTS ==="
 
-
-
 # within-K plots including identity modules. 
 # Set task max length to variable and get k from split strategy for without identity based train/test split 
 # self_eval flag indicates evaluation on same-k train and test splits
@@ -69,7 +67,11 @@ for function_type in "${function_types[@]}"; do
     done
 done
 
+# Figure 4 in the paper
+python -m scripts.equivalence_class_plots_diverse
 
+# Figure 5 (Position-wise module coverage) and Figure 19 (Pairwise module coverage) in the paper
+python -m scripts.module_coverage_plots
 
 
 # Figure 10a in the paper 
@@ -108,4 +110,6 @@ python -m scripts.analysis_plots \
         --task_max_length_flag fixed \
         --task_max_length 7 \
         --seeds 0 10 20 30 40 \
+
+
 

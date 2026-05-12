@@ -51,8 +51,8 @@ pip install -r requirements.txt
 
 There are two experimental tracks:
 
-1. **Synthetic benchmark** — NanoGPT trained from scratch on function-composition tasks (Figures 1–4, 10, 12–13, 19).
-2. **LiveCodeBench** — LLaMA-3 LoRA finetuning with controlled equivalence-class leakage (Figure 5+).
+1. **Synthetic benchmark** — NanoGPT trained from scratch on function-composition tasks (Figures 2–5, 10-26).
+2. **LiveCodeBench** — LLaMA-3 LoRA finetuning with controlled equivalence-class leakage (Figure 6).
 
 ### Track 1 — Synthetic Benchmark
 
@@ -66,12 +66,12 @@ This generates datasets for all split strategies used in the paper:
 
 | Split strategy | Description | Figure(s) |
 |---|---|---|
-| `combination_k` (k=2–6), `task_max_length=k` | Within-k evaluation, no identity modules | Figure 1 |
-| `combination_k` (k=1–6), `task_max_length=7` | Within-k and cross-k evaluation, with identity modules | Figure 1-2 |
-| `disjoint7_6_{0,10,20,50,60,70,100}` | Controlled equivalence-leakage splits (swap test members) | Figure 3 |
+| `combination_k` (k=2–6), `task_max_length=k` | Within-k evaluation, no identity modules | Figure 2 |
+| `combination_k` (k=1–6), `task_max_length=7` | Within-k and cross-k evaluation, with identity modules | Figure 2-3 |
+| `disjoint7_6_{0,10,20,50,60,70,100}` | Controlled equivalence-leakage splits (swap test members) | Figure 4 |
 | `disjoint9_6_{0,10,20,50,60,70,100}` | Controlled leakage without swapping | Figure 13 |
-| `continuouscoverage_6_{0.0–1.0}` | Position-wise module coverage | Figure 4, 19 |
-| `continuouspaircoverage_6_{0.0–1.0}` | Pairwise module coverage | Figure 4, 19 |
+| `continuouscoverage_6_{0.0–1.0}` | Position-wise module coverage | Figure 5, 19 |
+| `continuouspaircoverage_6_{0.0–1.0}` | Pairwise module coverage | Figure 5, 19 |
 | `equivalence_6_576_{0,1,25,49,73,97,121,144}` | Shared equivalence class validation | Figure 10a |
 | `uniequivalence_6_576_{0,...}` | Training equivalence class size sweep | Figure 10b |
 
@@ -109,12 +109,12 @@ to cover the full sweep. Pass `--pretrained True` to evaluate Gemma3-1B instead 
 bash bash_scripts/plotting.sh
 ```
 
-Generates all paper plots. Outputs are written to `results/plot_test/`.
+Generates paper plots. Outputs are written to `results/`.
 
 | Script section | Figure |
 |---|---|
-| Within-k with identity (`combination_identity`) | Figure 2 |
-| Within-k without identity (`combination_without_identity`) | Figure 1 |
+| Within-k with identity (`combination_identity`) | Figure 3 |
+| Within-k without identity (`combination_without_identity`) | Figure 2 |
 | Cross-k evaluation | Figure 3 |
 | Equivalence validation sweep | Figure 10a |
 | Training equivalence size sweep | Figure 10b |

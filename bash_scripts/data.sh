@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Generate data for within-k evaluation without identity functions (as task max length=k) (Figure 1)
+# Generate data for within-k evaluation without identity functions (as task max length=k) (Figure 2)
 for k in {2..6}; do
     echo "Generating data for combination_$k"
     python -m scripts.generate_data  --split_strategy combination_$k --task_max_length $k --function_type uniform
@@ -8,7 +8,7 @@ for k in {2..6}; do
 done
 
 
-# Generate data for within-k and cross-k evaluation with identity functions as task max length=7 (Figure 2)
+# Generate data for within-k and cross-k evaluation with identity functions as task max length=7 (Figure 3)
 for k in {1..6}; do
     echo "Generating data for combination_$k"
     python -m scripts.generate_data  --split_strategy combination_$k --task_max_length 7 --function_type uniform
@@ -22,7 +22,7 @@ done
 python -m src.data.equivalence_classes.ce_metric_calculation --K 6
 
 for percentage in 0 10 20 50 60 70 100; do
-    python -m scripts.generate_data --split_strategy disjoint7_6_$percentage --task_max_length 6 --function_type diverse # (Figure 3)
+    python -m scripts.generate_data --split_strategy disjoint7_6_$percentage --task_max_length 6 --function_type diverse # (Figure 4)
 done
 
 # Generate data for controlled splits after learning equivalence classes in diverse benchmark for K=6 (leakage without swapping test members)
@@ -30,7 +30,7 @@ for percentage in 0 10 20 50 60 70 100; do
     python -m scripts.generate_data --split_strategy disjoint9_6_$percentage --task_max_length 6 --function_type diverse # (Figure 13)
 done
 
-# Generate data for module coverage based position-wise and pairwise divergence for task max length=6 (Figure 4 and 19)
+# Generate data for module coverage based position-wise and pairwise divergence for task max length=6 (Figure 5 and 19)
 
 for percentage in 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0; do
     python -m scripts.generate_data --split_strategy continuouscoverage_6_$percentage --task_max_length 6 --function_type diverse
