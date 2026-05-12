@@ -69,47 +69,10 @@ for function_type in "${function_types[@]}"; do
     done
 done
 
-# Figure 4(a) in the paper
-strategy_prefix="permutation" # systematic sampling of compositions
-function_type="diverse"
-# set strategy prefix to permutationrandom for random sampling of compositions
-# use --plot_direct_sbs to plot final vs. full output accuracy only for step-by-step models.
-RESULTS_DIR="./results/plot_test/${function_type}/${strategy_prefix}"
-mkdir -p "$RESULTS_DIR"
-
-python -m scripts.analysis_plots \
-        --prompt_length fixed \
-        --train_splits ${strategy_prefix}_6_1 ${strategy_prefix}_6_10 ${strategy_prefix}_6_20 ${strategy_prefix}_6_30 ${strategy_prefix}_6_40 ${strategy_prefix}_6_50 ${strategy_prefix}_6_60 ${strategy_prefix}_6_70 ${strategy_prefix}_6_80 ${strategy_prefix}_6_90 ${strategy_prefix}_6_100 ${strategy_prefix}_6_200 ${strategy_prefix}_6_300 ${strategy_prefix}_6_400 ${strategy_prefix}_6_500 ${strategy_prefix}_6_600 ${strategy_prefix}_6_700 \
-        --self_eval \
-        --results_dir "$RESULTS_DIR" \
-        --modes  step_by_step  \
-        --pos_types   abs rel_global \
-        --function_type $function_type \
-        --task_max_length_flag fixed \
-        --task_max_length 6 \
-        --seeds 0 10 20 30 40 \
-        --plot_direct_sbs
-
-# Figure 4(b) in the paper
-strategy_prefix="combination"
-function_type="diverse"
-RESULTS_DIR="./results/plot_test/${function_type}/${strategy_prefix}"
-mkdir -p "$RESULTS_DIR"
-python -m scripts.analysis_plots \
-    --prompt_length fixed \
-    --train_splits ${strategy_prefix}_6 \
-    --eval_split ${strategy_prefix}_1 ${strategy_prefix}_2 ${strategy_prefix}_3 ${strategy_prefix}_4 ${strategy_prefix}_5 ${strategy_prefix}_6 \
-    --results_dir "$RESULTS_DIR" \
-    --modes step_by_step \
-    --pos_types abs rel_global \
-    --plot_direct_sbs \
-    --function_type $function_type \
-    --task_max_length_flag fixed \
-    --task_max_length 7 \
-    --seeds 0 10 20 30 40 
 
 
-# Figure 5(a) in the paper 
+
+# Figure 10a in the paper 
 strategy_prefix="equivalence"
 function_type="uniform"
 RESULTS_DIR="./results/plot_test/${function_type}/${strategy_prefix}"
@@ -128,7 +91,7 @@ python -m scripts.analysis_plots \
         --seeds 0 10 20 30 40 \
         --plot_std 
 
-# Figure 5(b) in the paper
+# Figure 10b in the paper
 strategy_prefix="uniequivalence_6_576"
 function_type="uniform"
 RESULTS_DIR="./results/plot_test/${function_type}/${strategy_prefix}"
@@ -146,22 +109,3 @@ python -m scripts.analysis_plots \
         --task_max_length 7 \
         --seeds 0 10 20 30 40 \
 
-# Figure 6 in the paper.     
-for strategy_prefix in "permutation" "permutationrandom"; do
-    for function_type in "uniform" "diverse"; do
-        RESULTS_DIR="./results/plot_test/${function_type}/${strategy_prefix}"
-        mkdir -p "$RESULTS_DIR"
-        python -m scripts.analysis_plots \
-                --prompt_length fixed \
-                --train_splits ${strategy_prefix}_6_1 ${strategy_prefix}_6_10 ${strategy_prefix}_6_100 ${strategy_prefix}_6_200 ${strategy_prefix}_6_300 ${strategy_prefix}_6_400 ${strategy_prefix}_6_500 ${strategy_prefix}_6_600 ${strategy_prefix}_6_700 \
-                --self_eval \
-                --results_dir "$RESULTS_DIR" \
-                --modes  direct step_by_step  \
-                --pos_types   abs rel_global \
-                --function_type $function_type \
-                --task_max_length_flag fixed \
-                --task_max_length 6 \
-                --seeds 0 10 20 30 40 \
-                --plot_std 
-    done
-done

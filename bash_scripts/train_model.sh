@@ -28,23 +28,15 @@ for split in "${TRAIN_SPLIT_STRATEGIES[@]}"; do
                         echo "Task max length: $TASK_MAX_LENGTH"
                         python -m scripts.train_model \
                             --prompt_mode "$mode" \
-                            --prompt_length "$length" \
                             --train_split "$split" \
                             --epochs "$EPOCHS" \
-                            --n_alphabets "$N_ALPHABETS" \
-                            --seq_len "$SEQ_LEN" \
-                            --n_functions "$N_FUNCTIONS" \
                             --pos_embedding_type "$pos_embedding_type" \
                             --n_heads_nlayers "$NHEADS_NLAYERS" \
                             --function_type "$function_type" \
-                            --task_max_length "$TASK_MAX_LENGTH" \ 
-                            --seed "$seed"
+                            --task_max_length "$TASK_MAX_LENGTH"
                     done
                 done
             done
         done
     done
 done
-
-
-

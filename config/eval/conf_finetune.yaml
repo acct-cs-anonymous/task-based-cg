@@ -1,6 +1,6 @@
 # Evaluation configuration
 seed: 0
-pretrained: False
+pretrained: True
 nsamples: 10000     # Number of samples to evaluate (per function composition)
 nbatch: 1000        # Batch-size  = nbatch * nsamples
 
@@ -12,15 +12,15 @@ n_alphabets: 26        # Total number of tokens "a-z" + " "
 seq_len: 6              # Length of tokens in data prompt
 n_functions: 6  # Number of maximum functions per composition
 model_name: "gemma1"
-function_type: "uniform"
+function_type: "diverse"
 device : "cuda"
 max_task_length: 6
 with_replacement: False
 n_alphabets: 26
 seq_len: 6
-train_split: "combination_6"
-eval_split: "combination_6"
-nheads_nlayers: "nh12_nl12"
+train_split: "disjoint7_6_60"
+eval_split: "disjoint7_6_60"
+nheads_nlayers: "nh6_nl3"
 pos_embedding_type: "rel_global"
 num_runs: 1
 

@@ -1,17 +1,21 @@
-seed: 0
+# Data generation configuration
+seed: 12
 
 # Properties of the prompt
+prompt_mode: 'direct'
+prompt_length: 'fixed'  # 'fixed' or 'variable'
 n_alphabets: 26        # Total number of tokens "a-z" + " "
 seq_len: 6              # Length of tokens in data prompt
 ndocuments: 100000      # Number of training documents
 neval_documents: 10000  # Number of evaluation documents
 with_replacement: False # Whether to sample strings with replacement
 
-function:
-  n_functions: 6  # Number of maximum functions per composition
-  repeat: False   # Repeat functions for every step of composition
-  type: 'uniform'
-  split:
-    strategy: 'combination_6' # default choice replaced by command line argument for data generation
-    
+
+# composition properties
+n_functions: 6  # Number of maximum functions per composition
+repeat: False   # Repeat functions for every step of composition
+function_type: 'diverse'
+task_max_length: 6
+split_strategy: 'combination_6' # default choice replaced by command line argument for data generation
+  
     

@@ -1,5 +1,11 @@
+# Training configuration
 # Location to store checkpoints
 seed: 0
+pretrained: False
+prompt_length: 'fixed'  # 'fixed' or 'variable'
+n_alphabets: 26        # Total number of tokens "a-z" + " "
+seq_len: 6              # Length of tokens in data prompt
+n_functions: 6  # Number of maximum functions per composition
 
 device : "cuda"
 bf16: False
@@ -12,6 +18,7 @@ data:
 net:
   compile: False
   vocab_size: 512
+  prompt_length: "fixed"
   context_size: 50
   n_layer: 3
   n_head: 6
@@ -32,5 +39,5 @@ optimizer:
   min_lr: 0.000006
 
 log: 
-  eval_interval: 5000
+  eval_interval: 500
   log_interval: 50
