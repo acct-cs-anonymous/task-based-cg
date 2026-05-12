@@ -234,7 +234,7 @@ class nanoGPT(nn.Module):
         else:
             raise ValueError(f"Invalid position embedding type: {self.config.pos_embedding_type}")
         self.LM_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
-        # Weight typing
+        # Weight tying
         self.transformer.wte.weight = self.LM_head.weight
 
         # init all weights
