@@ -38,7 +38,6 @@ if __name__ == "__main__":
         "--nheads_nlayers",
         type=str,
         default="nh6_nl3",
-        default="nh6_nl3",
         help="number of heads and layers",
     )
     parser.add_argument(
@@ -75,7 +74,8 @@ if __name__ == "__main__":
     cfg.seed = args.seed
     cfg.task_max_length = args.task_max_length
     cfg.data_path = get_directory_path(cfg, key='data', prefix_dir='data')
-    cfg.data_path = os.path.join(cfg.data_path, cfg.prompt_mode, cfg.train_split)
+    cfg.eval_data_path = os.path.join(cfg.data_path, cfg.prompt_mode, cfg.eval_split)
+    cfg.train_data_path = os.path.join(cfg.data_path, cfg.prompt_mode, cfg.train_split)
     if args.sample_efficiency_experiment:
         cfg.data_path = os.path.join(cfg.data_path, "sample_efficiency", "nsamples_{}".format(args.nsamples))
     cfg.eval_for_training = args.eval_for_training

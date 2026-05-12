@@ -15,7 +15,6 @@ from transformers import (
     AutoConfig,
     AutoModelForCausalLM,
     AutoTokenizer,
-    Gemma3ForCausalLM,
 )
 
 

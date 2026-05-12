@@ -113,7 +113,7 @@ class CompositionEquivalenceClasses:
         if self.visualizer is None:
             raise RuntimeError("Must call cluster_ce_metric_matrix() first")
         
-        strategy = f"disjoint2_{self.K}_{int(shared_equivalence_classes_percentage * 100)}"
+        strategy = f"disjoint7_{self.K}_{int(shared_equivalence_classes_percentage * 100)}"
         # strategy = "combination_6"
         train_combination_indices, test_combination_indices, train_combination_accs, test_combination_accs = \
             self.learner.get_combination_wise_acc(strategy, pos_embed)
@@ -163,7 +163,7 @@ class CompositionEquivalenceClasses:
 def main():
     """Example usage of the CompositionEquivalenceClasses system."""
     for K in [6]:
-        for shared_equivalence_classes_percentage in [0.0, 0.25, 0.5, 0.75, 1.0]:
+        for shared_equivalence_classes_percentage in [0.0, 1.0]:
             threshold = 0.01
             # Initialize and load data
             composition_equivalence_classes = CompositionEquivalenceClasses(K, threshold)
@@ -177,7 +177,7 @@ def main():
             plot_dir = f"{ROOT_DIR}/equivalence_classes/plots/combination_accs/{K}_{shared_equivalence_classes_percentage}"
             if not os.path.exists(plot_dir):
                 os.makedirs(plot_dir)
-            strategy = f"disjoint2_{K}_{int(shared_equivalence_classes_percentage * 100)}"
+            strategy = f"disjoint7_{K}_{int(shared_equivalence_classes_percentage * 100)}"
             composition_equivalence_classes.visualize_train_test_combination_accs(shared_equivalence_classes_percentage=shared_equivalence_classes_percentage, pos_embed="rel_global", plot_dir=plot_dir, cluster_size_min_threshold=23, cluster_size_max_threshold=100, plot_type="matrix")
             composition_equivalence_classes.visualize_train_test_combination_accs(shared_equivalence_classes_percentage=shared_equivalence_classes_percentage, pos_embed="abs", plot_dir=plot_dir, cluster_size_min_threshold=0, cluster_size_max_threshold=600, plot_type="bar", strategy=strategy)
 if __name__ == "__main__":

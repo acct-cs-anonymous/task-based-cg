@@ -8,12 +8,12 @@ NHEADS_NLAYERS="nh6_nl3"
 # (within-k evaluation without identity functions as task max length=k)
 python -m scripts.evaluate_model \
     --prompt_mode "direct" \
-    --train_split "combination_3" \
-    --eval_split "combination_3" \
+    --train_split "combination_6" \
+    --eval_split "combination_6" \
     --nheads_nlayers "$NHEADS_NLAYERS" \
     --pos_embedding_type "abs" \
-    --function_type "diverse" \
-    --task_max_length 3 \
+    --function_type "uniform" \
+    --task_max_length 6 \
     --seed 0 
 
 # (within-k evaluation with identity functions as task max length=7)

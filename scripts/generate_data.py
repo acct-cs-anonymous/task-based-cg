@@ -39,8 +39,7 @@ if __name__ == "__main__":
         "--sample_efficiency_experiment",
         type=bool,
         default=False,
-        help="whether to run sample efficiency experiment",
-        required=True,
+        help="whether to run sample efficiency experiment"
     )
     parser.add_argument(
         "--nsamples",

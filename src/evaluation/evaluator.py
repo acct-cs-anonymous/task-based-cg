@@ -26,6 +26,8 @@ class Metrics:
     """Evaluation metrics container."""
     sharp_accuracy: float
     mean_accuracy: float
+    sharp_accuracy_final_output: float
+    mean_accuracy_final_output: float
     ood_rate: float
     combination_sharp_acc: Optional[Dict[int, float]] = None
     combination_mean_acc: Optional[Dict[int, float]] = None
@@ -40,7 +42,7 @@ class Evaluator:
     def __init__(self, cfg, logger):
         self.cfg = cfg
         self.logger = logger
-        self.token_mgr = TokenManager(load_path=cfg.data_path)
+        self.token_mgr = TokenManager(load_path=cfg.eval_data_path)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
@@ -83,10 +85,14 @@ class Evaluator:
     def load_dataloaders(self):
         loaders = {}
         for split in ["train", "train_heldout", "test"]:
-            if self.cfg.pretrained:
-                dataset = MappedSyntheticDataset(self.cfg.data_path, split=split, mode=self.cfg.prompt_mode, token_map=self.token_map)
+            if split in ["train", "train_heldout"]:
+                data_path = self.cfg.train_data_path
             else:
-                dataset = SyntheticDataset(self.cfg.data_path, split=split, mode=self.cfg.prompt_mode)
+                data_path = self.cfg.eval_data_path
+            if self.cfg.pretrained:
+                dataset = MappedSyntheticDataset(data_path, split=split, mode=self.cfg.prompt_mode, token_map=self.token_map)
+            else:
+                dataset = SyntheticDataset(data_path, split=split, mode=self.cfg.prompt_mode)
             loader = get_data_loader(dataset, self.cfg.data.batch_size, self.cfg.data.num_workers)
             loaders[split] = loader
         return loaders
@@ -98,18 +104,17 @@ class Evaluator:
         if self.cfg.sample_efficiency_experiment:
             ckpt_dir = os.path.join(ckpt_dir, "sample_efficiency", "nsamples_{}".format(self.cfg.nsamples))
         # replace eval with ck
+        print(ckpt_dir)
         all_files = os.listdir(ckpt_dir)
         all_files = [os.path.join(ckpt_dir, file) for file in all_files if file.endswith(".pt")]
         all_ckpt_files = [(itr(file), file) for file in all_files]
         all_ckpt_files = sorted(all_ckpt_files)
+        
         if self.cfg.eval_for_training:
             return all_ckpt_files
         else:
             return [(all_ckpt_files[-1])]
-        if self.cfg.eval_for_training:
-            return all_ckpt_files
-        else:
-            return [(all_ckpt_files[-1])]
+        
         
     
     def create_uniform_sampler(self, dataset, per_sample_count=None):
@@ -173,25 +178,26 @@ class Evaluator:
                 if self.cfg.prompt_mode == "direct" 
                 else seq_info["prompt_pos_end"])
         end = seq_info["end_pos"]
+        start_final_output = seq_info["last_sep_pos"] + 1
+        end_final_output = seq_info["end_pos"]
         
         
         # Extract relevant portions
         output_tokens = outputs[:, start:end]
         target_tokens = targets[:, start:end]
+        output_final_output = outputs[:, start_final_output:end_final_output]
+        target_final_output = targets[:, start_final_output:end_final_output]
         
         # Calculate accuracies
         matches = output_tokens == target_tokens
         sharp_acc = matches.all(dim=-1).float().mean().cpu().item()
         mean_acc = matches.float().mean().cpu().item()
         
-        # # OOD detection
-        # ood_flags = is_ood_prompt(
-        #     self.token_mgr, self.token_mgr.token_idx, 
-        #     output_tokens, target_tokens,
-        #     getattr(self.cfg, 'prompt_length', 'fixed')
-        # ).cpu().tolist()
-        # ood_rate = np.mean(ood_flags)
-        # have ood_flags numpy array of 0s
+        # Calculate final output accuracies
+        matches_final_output = output_final_output == target_final_output
+        sharp_acc_final_output = matches_final_output.all(dim=-1).float().mean().cpu().item()
+        mean_acc_final_output = matches_final_output.float().mean().cpu().item()
+        
         ood_flags = torch.zeros_like(matches).cpu().numpy()
         ood_rate = np.mean(ood_flags)
         # Combination-wise metrics
@@ -202,6 +208,8 @@ class Evaluator:
         return Metrics(
             sharp_accuracy=sharp_acc,
             mean_accuracy=mean_acc,
+            sharp_accuracy_final_output=sharp_acc_final_output,
+            mean_accuracy_final_output=mean_acc_final_output,
             ood_rate=ood_rate,
             combination_sharp_acc=comb_sharp_acc,
             combination_mean_acc=comb_mean_acc,
@@ -256,14 +264,7 @@ class Evaluator:
         combination_ids = np.concatenate(all_comb_ids)
         docs_function_token = np.concatenate(all_docs_function_token)
         # generate a unique combination ids map
-        if len(all_comb_ids_map) > 1:
-            combination_ids_map = {comb_id: doc_fn for doc_fn, comb_id in zip(docs_function_token, combination_ids)}
-        
-        with open("combination_ids_map.pkl", "wb") as f:
-            pickle.dump(combination_ids_map, f)
-        else:
-            combination_ids_map = all_comb_ids_map[0]
-        
+        combination_ids_map = {comb_id: doc_fn for doc_fn, comb_id in zip(docs_function_token, combination_ids)}
         # Calculate metrics
         metrics = self._calc_metrics(outputs, targets, self._seq_info, combination_ids)
         
@@ -271,7 +272,6 @@ class Evaluator:
             f"Eval {split}: Acc={metrics.sharp_accuracy:.4f} "
             f"OOD={metrics.ood_rate:.4f} MeanAcc={metrics.mean_accuracy:.4f}"
         )
-        self._log_predictions(split, targets, outputs)
         self._log_predictions(split, targets, outputs)
         
         return metrics, combination_ids_map
@@ -332,7 +332,9 @@ class Evaluator:
         self.logger.info(
             f"\nIter {ck} | {split} | "
             f"SharpAcc: {metrics.sharp_accuracy:.4f} | "
+            f"SharpAccFinalOutput: {metrics.sharp_accuracy_final_output:.4f} | "
             f"MeanAcc: {metrics.mean_accuracy:.4f} | "
+            f"MeanAccFinalOutput: {metrics.mean_accuracy_final_output:.4f} | "
             f"OOD: {metrics.ood_rate:.4f} | "
             
         )
